@@ -1,17 +1,15 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class Login {
 
-    public static String userRole(String name, String password) throws IOException{
+    public static String userRole(String name, String password) {
         FileOperations fileOperations = new FileOperations();
 
             JSONArray jsonArray = fileOperations.userFileToJsonArray();
@@ -52,7 +50,7 @@ public class Login {
         System.out.println("Choose any one and enter: ");
         System.out.println("1. Add question to question bank ");
         System.out.println("2. View all the questions");
-        System.out.println("3. Update existing questions ");
+//        System.out.println("3. Update existing questions ");
         System.out.println("4. View the marks of students");
 
 
@@ -123,7 +121,7 @@ public class Login {
     }
 
 
-    public static void showQuestions() throws FileNotFoundException, InterruptedException {
+    public static void showQuestions() throws  InterruptedException {
         FileOperations fileOperations = new FileOperations();
         JSONArray questionArray = fileOperations.quizFileToJsonArray();
         System.out.println("Total questions: "+questionArray.size());

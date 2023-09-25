@@ -1,9 +1,7 @@
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -31,15 +29,13 @@ public class FileOperations {
     }
 
 
-    public JSONArray quizFileToJsonArray() throws FileNotFoundException {
+    public JSONArray quizFileToJsonArray() {
         JSONArray jsonArray;
         try (FileReader fileReader = new FileReader(Quiz_File)) {
             JSONParser jsonParser = new JSONParser();
             jsonArray = (JSONArray) jsonParser.parse(fileReader);
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
+        } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
         return jsonArray;
