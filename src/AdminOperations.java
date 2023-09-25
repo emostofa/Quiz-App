@@ -10,44 +10,33 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class AdminOperations {
-    public AdminOperations(){
 
-    }
 
-    public static void saveQuestions(JSONObject Obj) throws IOException {
-        JSONArray existingArray;
-        try (FileReader fileReader = new FileReader("quiz.json")) {
+    public void saveQuestions(JSONObject obj) {
+        JSONArray existingArray = loadExistingQuestions();
 
-            if (fileReader.read()>-1){
-                FileReader fileReader2 = new FileReader("quiz.json");
-                existingArray = (JSONArray) new JSONParser().parse(fileReader2);
-
-            }
-            else {
-                existingArray = new JSONArray();
-
-            }
-
-            existingArray.add(Obj);
-            FileWriter fileWriter = new FileWriter("quiz.json"); //remove old data
-            fileWriter.write(existingArray.toJSONString()); // write old + new data
-            fileWriter.flush();
-
-        } catch (IOException | ParseException e) {
-            System.out.println(e.fillInStackTrace());
+        if (existingArray == null) {
+            existingArray = new JSONArray();
         }
 
+        existingArray.add(obj);
+
+        try (FileWriter fileWriter = new FileWriter("quiz.json")) {
+            fileWriter.write(existingArray.toJSONString());
+            fileWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-    public static JSONObject addQuestions() throws InterruptedException {
 
+    public JSONObject addQuestions() {
         JSONObject questionObject = new JSONObject();
-
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Input your question: ");
         String question = scanner.nextLine();
         questionObject.put("question", question);
-//        TimeUnit.SECONDS.sleep(1);
+
         System.out.println("Input Option 1");
         String option1 = scanner.nextLine();
         questionObject.put("option 1", option1);
@@ -64,15 +53,15 @@ public class AdminOperations {
         String option4 = scanner.nextLine();
         questionObject.put("option 4", option4);
 
-        System.out.println("input answer option key, eg, 1");
+        System.out.println("Input answer option key, e.g., 1");
         String answerKey = scanner.next();
         questionObject.put("answerkey", answerKey);
+
         return questionObject;
     }
-    public void saveInputs() throws InterruptedException, IOException {
 
+    public void saveInputs(JSONObject ques) throws InterruptedException, IOException {
 
-        JSONObject ques = addQuestions();
         saveQuestions(ques);
 
         System.out.println("Please Wait...");
@@ -80,5 +69,19 @@ public class AdminOperations {
         System.out.println("Inputs saved successfully!");
     }
 
-}
+    private JSONArray loadExistingQuestions() {
+        try (FileReader fileReader = new FileReader("quiz.json")) {
+            JSONParser jsonParser = new JSONParser();
+            Object obj = jsonParser.parse(fileReader);
 
+            if (obj instanceof JSONArray) {
+                return (JSONArray) obj;
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+}
