@@ -7,11 +7,14 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class StudentOperations {
-    private int marks = 0;
+    private static int marks = 0;
+    private static final String User_File = "users.json";
+    private static final String Quiz_File = "quiz.json";
+    private static final String Mark_File = "marks.json";
 
-    public void showQuestions(int index)  {
+    public static void showQuestions(int index)  {
         FileOperations fileOperations = new FileOperations();
-        JSONArray quesArray = randomizeQuestions(fileOperations.quizFileToJsonArray());
+        JSONArray quesArray = randomizeQuestions(fileOperations.fileToJsonArray(Quiz_File));
         JSONObject question = (JSONObject) quesArray.get(index);
         String option1 = (String) question.get("option 1");
         String option2 = (String) question.get("option 2");
@@ -19,7 +22,7 @@ public class StudentOperations {
         String option4 = (String) question.get("option 4");
         String que = (String) question.get("question");
 
-        System.out.println("Q: " + que);
+        System.out.println("Q "+index+":" + que);
         System.out.println("Option 1: " + option1);
         System.out.println("Option 2: " + option2);
         System.out.println("Option 3: " + option3);
@@ -27,7 +30,7 @@ public class StudentOperations {
         System.out.print("Your answer: ");
 
         Scanner scanner = new Scanner(System.in);
-        String answer = scanner.next();
+        String answer = scanner.nextLine();
 
         if (answer.equals(question.get("answerkey"))) {
             marks += 1;
@@ -35,7 +38,7 @@ public class StudentOperations {
     }
 
 
-    private JSONArray randomizeQuestions(JSONArray arr) {
+    private static JSONArray randomizeQuestions(JSONArray arr) {
         Random rnd = new Random();
 
         for (int i = arr.size() - 1; i > 0; i--) {
@@ -49,8 +52,49 @@ public class StudentOperations {
 
         return arr;
     }
+    public static void studentPrompt(){
+        do {
+            Scanner scanner = new Scanner(System.in);
+            String confirmation = scanner.next();
+            int i = 10;
+
+            if ("s".equals(confirmation)) {
+                while (i > 0) {
+                    showQuestions(i);
+                    i--;
+                }
+
+
+            } else if ("q".equals(confirmation)) {
+                break;
+            }
+            System.out.println("Would you like to start again? press 's' to start and 'q' to quit! ");
+        } while (true);
+    }
+    public static void studentMarks(StudentOperations studentOperations) throws IOException {
+        int marks = studentOperations.getMarks();
+        FileOperations fileOperations = new FileOperations();
+        JSONObject userMark = new JSONObject();
+        userMark.put("mark",String.valueOf(marks));
+        userMark.put("name", user);
+        JSONArray markArr = new JSONArray();
+        markArr.add(userMark);
+        fileOperations.writeFile("marks.json", markArr.toJSONString());
+        if (marks>=8){
+            System.out.println("Excellent! You have got "+marks+" out of 10");
+        } else if (marks>=5) {
+            System.out.println("Good. You have got "+marks+" out of 10");
+        } else if (marks>=2) {
+            System.out.println("Very poor. You have got "+marks+" out of 10");
+        }
+        else {
+            System.out.println("Sorry, you have failed. You have got "+marks+" out of 10");
+        }
+
+    }
 
     public int getMarks() {
         return marks;
+
     }
 }

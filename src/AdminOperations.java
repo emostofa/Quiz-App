@@ -10,23 +10,19 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class AdminOperations {
+    private static final String Quiz_File = "quiz.json";
+    private static final String Mark_File = "marks.json";
 
-
-    public void saveQuestions(JSONObject obj) {
+    public void saveQuestions(JSONObject obj) throws IOException {
         JSONArray existingArray = loadExistingQuestions();
 
         if (existingArray == null) {
             existingArray = new JSONArray();
         }
-
         existingArray.add(obj);
 
-        try (FileWriter fileWriter = new FileWriter("quiz.json")) {
-            fileWriter.write(existingArray.toJSONString());
-            fileWriter.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+       FileOperations fileOperations = new FileOperations();
+       fileOperations.writeFile("quiz.json", existingArray.toJSONString());
     }
 
     public JSONObject addQuestions() {
@@ -82,6 +78,88 @@ public class AdminOperations {
         }
 
         return null;
+    }
+
+    public void adminPrompts() throws InterruptedException, IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Choose any one and enter: ");
+        System.out.println("1. Add question to question bank ");
+        System.out.println("2. View all the questions");
+//        System.out.println("3. Update existing questions ");
+        System.out.println("3. View the marks of students");
+
+
+        Thread.sleep(1000);
+        int input = scanner.nextInt();
+        if (!(input == 1 || input == 2 || input == 3 )){
+            System.out.println("Wrong input! Please try again");
+//            break;
+        }
+        switch (input) {
+            case 1:
+                addInputQues();
+                break;
+            case 2:
+                showQuestions();
+                System.out.println();
+                break;
+            case 3:
+                showMarks();
+                break;
+            default:
+                System.out.println("Please enter a valid input!");
+
+        }
+    }
+    public static void addInputQues() throws IOException, InterruptedException {
+        System.out.println("Please create new questions in the question bank.");
+        Scanner scanner = new Scanner(System.in);
+        AdminOperations operations = new AdminOperations();
+
+        do {
+            JSONObject ques = operations.addQuestions();
+
+            System.out.println("Enter 'y' to confirm and 'n' to discard");
+            String confirmation = scanner.next();
+            if ("y".equals(confirmation)) {
+                operations.saveInputs(ques);
+            } else {
+                System.out.println("Inputs discarded");
+            }
+
+            System.out.println("Do you want to add more questions? Please enter 'y' to add and 'q' to quit");
+
+            scanner.nextLine();
+
+            String continueInput = scanner.nextLine();
+            if (continueInput.equals("q")) {
+                break;
+            }
+        } while (true);
+
+        scanner.close();
+    }
+
+
+    public static void showQuestions() throws  InterruptedException {
+        FileOperations fileOperations = new FileOperations();
+        JSONArray questionArray = fileOperations.fileToJsonArray(Quiz_File);
+        System.out.println("Total questions: "+questionArray.size());
+        System.out.println("The questions are:- ");
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println("Loading... Please wait");
+        TimeUnit.SECONDS.sleep(1);
+        for (Object obj : questionArray ){
+            JSONObject jsonObject = (JSONObject) obj;
+
+            System.out.println(jsonObject.get("question"));
+        }
+    }
+    public static void showMarks() {
+        FileOperations fileOperations = new FileOperations();
+        JSONArray marksArr = fileOperations.fileToJsonArray(Mark_File);
+        System.out.println(marksArr.toJSONString());
+
     }
 
 }
