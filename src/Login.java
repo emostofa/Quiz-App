@@ -37,18 +37,18 @@ public class Login {
         String role = userRole(name, password);
 
         if ("admin".equals(role)) {
+            user = name;
             adminLogin();
-            user = name;
         } else if ("student".equals(role)) {
-            studentLogin();
             user = name;
+            studentLogin();
         } else {
             System.out.println("Please input valid credentials");
         }
     }
 
     public static void adminLogin() throws IOException, InterruptedException {
-        Scanner scanner = new Scanner(System.in);
+
         System.out.println("Welcome admin!");
         Thread.sleep(520);
         AdminOperations adminOperations = new AdminOperations();
@@ -61,7 +61,8 @@ public class Login {
         TimeUnit.SECONDS.sleep(1);
         System.out.println("Welcome to the quiz! We will throw you 10 questions. Each MCQ mark is 1, and there is no negative marking.");
         System.out.println("You will be given 10 Minutes. Are you ready? Press 's' for start or 'q' to quit.");
-
+        StudentOperations studentOperations = new StudentOperations();
+        studentOperations.studentPrompt(user);
 
     }
 

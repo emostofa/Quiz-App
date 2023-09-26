@@ -1,6 +1,5 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 import java.util.Random;
@@ -8,9 +7,8 @@ import java.util.Scanner;
 
 public class StudentOperations {
     private static int marks = 0;
-    private static final String User_File = "users.json";
+
     private static final String Quiz_File = "quiz.json";
-    private static final String Mark_File = "marks.json";
 
     public static void showQuestions(int index)  {
         FileOperations fileOperations = new FileOperations();
@@ -52,7 +50,7 @@ public class StudentOperations {
 
         return arr;
     }
-    public static void studentPrompt(){
+    public  void studentPrompt(String user) throws IOException {
         do {
             Scanner scanner = new Scanner(System.in);
             String confirmation = scanner.next();
@@ -64,15 +62,17 @@ public class StudentOperations {
                     i--;
                 }
 
-
             } else if ("q".equals(confirmation)) {
                 break;
             }
+
             System.out.println("Would you like to start again? press 's' to start and 'q' to quit! ");
+            studentMarks(user);
+            marks =0;
         } while (true);
     }
-    public static void studentMarks(StudentOperations studentOperations) throws IOException {
-        int marks = studentOperations.getMarks();
+    public static void studentMarks(String user) throws IOException {
+
         FileOperations fileOperations = new FileOperations();
         JSONObject userMark = new JSONObject();
         userMark.put("mark",String.valueOf(marks));
@@ -93,8 +93,4 @@ public class StudentOperations {
 
     }
 
-    public int getMarks() {
-        return marks;
-
-    }
 }
